@@ -1,0 +1,10 @@
+1. When you decrease kmer length, the contig distribution decreases
+
+2. For longer reads, it is generally expected that one increase their coverage cutoff, *because*
+cutoff is used to trim sequence that is not necessary for the alignment in the de Bruijn graph.
+If you cutoff too much you may rid your assembly of sequence data that is actually useful to 
+completing a more accurate assembly; too small and you may not properly rid your assembly of 
+unnecessary artifacts. Cutoff that is set to "auto" in velvet is set to half the expected coverage. 
+
+3. Increasing minimum contig length will decrease the size of the distribution of contigs. 
+Conversely, the N50 will increase as minimum contig length increase as minimum contig length decreases.

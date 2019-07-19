@@ -1,0 +1,249 @@
+Problem Set 6 -- 07/12/2019
+__________________________________________________
+
+GENERAL NOTES/TIPS:
+
+ This will cover 99% of your cases of opening files for reading and/or writing.
+
+ 	with open(some_file, 'r') as f:
+		for line in f:
+			do something
+ 
+	 with open(some_file, 'w') as f:
+		f.write(something)
+ 
+ 	with open(some_input_file, 'r') as fin, open(some_output_file, 'w') as fout:
+		do reading and writing stuff
+	
+Extracting FASTA ID lines from file:
+	actual length of Kmer  = (given length) + 48
+	
+	
+BIOCONDA RECIPE FOR BUILDING VELVET:
+#!/bin/bash
+
+make 'CATEGORIES=4' 'MAXKMERLENGTH=191' 'OPENMP=1' 'LONGSEQUENCES=1' 'BUNDLEDZLIB=1'
+mkdir -p $PREFIX/bin
+cp velvetg velveth $PREFIX/bin
+
+GIVES NUMBER OF NUCLEOTIDES TO BE USED FOR CALCULATIONS OF EXPECTED COVERAGE 'C' 
+cat 800_3_PE5_interleaved.fq_1 | paste - - - - | cut -f2 | tr -d '\n' | wc -c
+68009851
+cat 800_3_PE5_interleaved.fq_2 | paste - - - - | cut -f2 | tr -d '\n' | wc -c
+67083157
+cat 800_3_PE5_interleaved.fq.unmatched | paste - - - - | cut -f2 | tr -d '\n' | wc -c
+62089591
+
+EXPECTED COVERAGE = 197182599/2000000
+
+GIVES NUMBER OF RECORDS TO BE USED FOR CALCULATIONS OF EXPECTED COVERAGE 'C'
+
+cat 800_3_PE5_interleaved.fq.unmatched | grep "^@" | wc -l
+849803
+cat 800_3_PE5_interleaved.fq_1 | grep "^@" | wc -l
+858989
+cat 800_3_PE5_interleaved.fq_2 | grep "^@" | wc -l
+858989
+
+ L = total NT / total records = 76.79
+cov expected = total NT / genome size = 98.59
+50 fosmids of 40 kb = 40,000 * 50 = 2,000,000 = whole genome size (bp)
+
+KMER COV = cov expected (L - k(three diff values) + 1) / L
+	for k = 31 = 60.07
+	for k = 41 = 47.23
+	for k = 49 = 36.96
+
+***ROUNDED TO TWO DECIMAL PLACES***
+
+
+STATS FOR FISH FILES:
+
+FOR fish31
+
+N50 of Assembly: 261
+Mean Depth of Coverage: 36.85640213939809
+Total Assembly Length: 2432404
+Mean Contig Length: 198.98592931937173
+Maximum Contig Length: 4077
+Number of contigs: 12224
+
+FOR fish41
+
+N50 of Assembly: 795
+Mean Depth of Coverage: 36.5914034993494
+Total Assembly Length: 1795699
+Mean Contig Length: 333.83509946086633
+Maximum Contig Length: 7451
+Number of contigs: 5379
+
+FOR fish49
+
+N50 of Assembly: 1116
+Mean Depth of Coverage: 40.9670585537564
+Total Assembly Length: 1604191
+Mean Contig Length: 519.4919041450777
+Maximum Contig Length: 5985
+Number of contigs: 3088
+
+FOR fish49_20
+
+N50 of Assembly: 1802
+Mean Depth of Coverage: 61.621639707993495
+Total Assembly Length: 1114066
+Mean Contig Length: 908.6998368678629
+Maximum Contig Length: 10467
+Number of contigs: 1226
+
+FOR fish49_60
+
+N50 of Assembly: 1896
+Mean Depth of Coverage: 122.78036458986188
+Total Assembly Length: 401170
+Mean Contig Length: 924.3548387096774
+Maximum Contig Length: 7268
+Number of contigs: 434
+
+FOR fish49_auto
+
+N50 of Assembly: 1784
+Mean Depth of Coverage: 58.76947992492486
+Total Assembly Length: 1195535
+Mean Contig Length: 897.5487987987988
+Maximum Contig Length: 10467
+Number of contigs: 1332
+
+
+FOR fish49_len500
+
+N50 of Assembly: 2013
+Mean Depth of Coverage: 49.734144143540696
+Total Assembly Length: 1030901
+Mean Contig Length: 1644.1802232854864
+Maximum Contig Length: 10467
+Number of contigs: 627
+
+
+Problem Set 7 --
+_____________________________________________________
+
+cat humantable.txt | grep "ENSP" | cut -f 1 | sort | uniq -c | sort | wc -l 			#GIVES # OF LONGEST PROTEINS PER GENE ID	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Problem Set 8 -- 07/15/2019
+_____________________________________________________
+
+
+
+STAR version ran: 2.7.1a
+
+SAM tools version ran: samtools 1.9
+						Using htslib 1.9
+						Copyright (C) 2018 Genome Research Ltd.
+FOR DATABASE RUN:
+		
+	DONT FORGET YOUR SHEBANG: #!/bin/bash	
+		
+						
+	Maximum resident set size (kbytes): 14957524
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:44.23
+	Percent of CPU this job got: 337%
+	Exit status: 104
+
+RUNNING SLURM SCRIPTS (CL command):
+
+	sbatch -A bgmp -p bgmp ./filename 
+
+	check status of run with: squeue -u apulvino
+
+		THINGS TO DO WHEN TALAPAS IS WORKING AGAIN (WHERE YOU LEFT OFF):
+
+		***Make sure you made a new directory in dre and add that directory to the --genomeDir portion of both the STARdatabase and STARrun scripts
+		*** YOU'RE AT #5 / #6 on this one		
+	
+CTRL+D == TO GET OFF NODE	
+		
+PART 1 #8 // Using SAM TOOLS  (CONVERTING SAM TO BAM):
+
+/usr/bin/time -v samtools view -b -S DanioAligned.out.sam > DanioAligned.out.bam
+/usr/bin/time -v samtools sort DanioAligned.out.bam > DanioAlignedChroms.bam
+
+
+UNIX COMMANDS USED:
+
+/usr/bin/time -v samtools view -b -S DanioAligned.out.sam > DanioAligned.out.bam	#convert sam to bam
+/usr/bin/time -v samtools sort DanioAligned.out.bam > DanioAlignedChroms.bam		#sort aligned 
+samtools view <filename>.bam "Chr1" > <filename>.bam								#extract chromosome1
+grep -v ^@ chr1.DanioAligned.sam2 | wc -l
+922600
+
+
+
+DATABASE RUN
+ 		User time (seconds): 1175.81
+        System time (seconds): 15.46
+        Percent of CPU this job got: 324%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 6:06.94
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 15410136
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 81676
+        Voluntary context switches: 8685
+        Involuntary context switches: 856
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 0
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+ALIGNMENT SCRIPT RUN
+  		User time (seconds): 1538.14
+        System time (seconds): 10.82
+        Percent of CPU this job got: 639%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 4:02.03
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 15816760
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 211838
+        Voluntary context switches: 78119
+        Involuntary context switches: 2145
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 0
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+
+INDEXED FILES ARE suffixed: ".bai"
